@@ -67,8 +67,14 @@ static void gc_delete_node(GcNode* node)
         printf("GC: delete %p pointer\n", node->pointer);
     }
 
+    // Call destructor
+    if(node->dtor)
+        node->dtor(node);
+
+    // ...
     gc.allocated -= node->size;
 
+    // Free node
     free(node);
 }
 
@@ -139,6 +145,11 @@ void gc_shutdown()
 
 void* gc_malloc(int sizeInBytes)
 {
+    return gc_malloc_dtor(sizeInBytes, NULL);
+}
+
+void* gc_malloc_dtor(int sizeInBytes, GcNodeDestructor dtor)
+{
     if(gc.debug)
     {
         printf("GC: alloc %d bytes\n", sizeInBytes);
@@ -161,6 +172,7 @@ void* gc_malloc(int sizeInBytes)
 
     // Inicializar nodo
     memset(node, 0, nodeSize);
+    node->dtor = dtor;
     node->size = sizeInBytes;
     node->pointer = (((unsigned char*)node) + sizeof(GcNode));
     

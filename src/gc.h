@@ -5,6 +5,8 @@
 typedef struct _Gc Gc;
 typedef struct _GcNode GcNode;
 
+typedef void (*GcNodeDestructor)(GcNode* node);
+
 typedef struct _Gc
 {
     bool                debug;
@@ -23,6 +25,7 @@ typedef struct _GcNode
     GcNode*             prev;               // Previous node in the linked-list
     unsigned int        size;               // Allocated size in bytes
     bool                marked;
+    GcNodeDestructor    dtor;               // Destructor
     void*               pointer;            // Memory pointer
 }GcNode;
 
@@ -51,6 +54,16 @@ void gc_shutdown();
  * @return Pointer to the new object instance
  */
 void* gc_malloc(int sizeInBytes);
+
+/**
+ * Allocate a new object with destructor
+ *
+ * @param[in] sizeInBytes   - Size in bytes for the object
+ * @param[in] dtor          - Destructor for the object
+ *
+ * @return Pointer to the new object instance
+ */
+void* gc_malloc_dtor(int sizeInBytes, GcNodeDestructor dtor);
 
 /**
  * Run garbage collector

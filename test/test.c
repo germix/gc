@@ -33,11 +33,26 @@ void test2()
 
 }
 
+void dtor(GcNode* node)
+{
+    printf("Node dtor(%p)\n", node);
+    printf("  size: %d\n", node->size);
+    printf("  pointer: %p\n", node->pointer);
+}
+
+void test3()
+{
+    printf("Test GC - 3\n\n");
+
+    gc_malloc_dtor(100, dtor);
+}
+
 int main(int argc, char* argv[])
 {
     gc_init(true, &argc);
     //test1();
-    test2();
+    //test2();
+    test3();
     gc_shutdown();
 
     return 0;
