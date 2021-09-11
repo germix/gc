@@ -33,6 +33,8 @@ typedef struct _GcNode
 extern "C" {
 #endif
 
+extern Gc gc;
+
 /**
  * Initialize the garbage collector
  * 
