@@ -150,9 +150,9 @@ void gc_init(unsigned int max, unsigned int debug, void* stackBottom)
 
 void gc_shutdown()
 {
-    gc_run();
-
     gc_clear_roots();
+
+    gc_run();
 
     if(gc.debug & GC_DEBUG_SHUTDOWN)
     {
