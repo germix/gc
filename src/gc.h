@@ -7,9 +7,16 @@ typedef struct _GcNode GcNode;
 
 typedef void (*GcNodeDestructor)(GcNode* node);
 
+#define GC_DEBUG_MALLOC         0x00000001
+#define GC_DEBUG_DELETE         0x00000002
+#define GC_DEBUG_SHUTDOWN       0x00000004
+#define GC_DEBUG_RUN            0x00000008
+
+#define GC_DEBUG_ALL            (GC_DEBUG_MALLOC | GC_DEBUG_DELETE | GC_DEBUG_SHUTDOWN | GC_DEBUG_RUN)
+
 typedef struct _Gc
 {
-    bool                debug;
+    unsigned int        debug;
     void*               stackBottom;        // Bottom of call-stack
 
     GcNode*             nodeListHead;       // First node in this list
@@ -38,10 +45,10 @@ extern Gc gc;
 /**
  * Initialize the garbage collector
  * 
- * @param[in] debug         - Debug mode ON
+ * @param[in] debug         - Debug flags
  * @param[in] stackBottom   - Call-stack bottom
  */
-void gc_init(bool debug, void* stackBottom);
+void gc_init(unsigned int debug, void* stackBottom);
 
 /**
  * Shutdown the garbage collector

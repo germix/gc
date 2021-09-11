@@ -49,7 +49,7 @@ void test3()
 
 int main(int argc, char* argv[])
 {
-    gc_init(true, &argc);
+    gc_init(GC_DEBUG_ALL, &argc);
     //test1();
     //test2();
     test3();

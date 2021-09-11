@@ -62,7 +62,7 @@ static void gc_mark_node(GcNode* node)
 //
 static void gc_delete_node(GcNode* node)
 {
-    if(gc.debug)
+    if(gc.debug & GC_DEBUG_DELETE)
     {
         printf("GC: delete %p pointer\n", node->pointer);
     }
@@ -123,7 +123,7 @@ static void gc_sweep_phase()
     }
 }
 
-void gc_init(bool debug, void* stackBottom)
+void gc_init(unsigned int debug, void* stackBottom)
 {
     memset(&gc, 0, sizeof(Gc));
 
@@ -137,7 +137,7 @@ void gc_shutdown()
 {
     gc_run();
 
-    if(gc.debug)
+    if(gc.debug & GC_DEBUG_SHUTDOWN)
     {
         printf("GC: Memory leak (%d bytes)\n", gc.allocated);
     }
@@ -150,7 +150,7 @@ void* gc_malloc(int sizeInBytes)
 
 void* gc_malloc_dtor(int sizeInBytes, GcNodeDestructor dtor)
 {
-    if(gc.debug)
+    if(gc.debug & GC_DEBUG_MALLOC)
     {
         printf("GC: alloc %d bytes\n", sizeInBytes);
     }
@@ -198,6 +198,14 @@ void* gc_malloc_dtor(int sizeInBytes, GcNodeDestructor dtor)
 
 void gc_run()
 {
+    if(gc.debug & GC_DEBUG_RUN)
+    {
+        printf("GC: start run\n");
+    }
     gc_mark_phase();
     gc_sweep_phase();
+    if(gc.debug & GC_DEBUG_RUN)
+    {
+        printf("GC: finish run\n");
+    }
 }
