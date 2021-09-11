@@ -123,14 +123,13 @@ static void gc_sweep_phase()
     }
 }
 
-void gc_init(unsigned int debug, void* stackBottom)
+void gc_init(unsigned int max, unsigned int debug, void* stackBottom)
 {
     memset(&gc, 0, sizeof(Gc));
 
+    gc.max = max;
     gc.debug = debug;
     gc.stackBottom = stackBottom;
-
-    gc.max = 4096;
 }
 
 void gc_shutdown()

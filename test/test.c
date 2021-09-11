@@ -1,6 +1,10 @@
 #include "gc.h"
 #include <stdio.h>
 
+#define KB(bytes)       ((bytes) << 10)
+#define MB(bytes)       ((bytes) << 20)
+#define GB(bytes)       ((bytes) << 30)
+
 void test1()
 {
     printf("Test GC - 1\n\n");
@@ -49,7 +53,7 @@ void test3()
 
 int main(int argc, char* argv[])
 {
-    gc_init(GC_DEBUG_ALL, &argc);
+    gc_init(KB(4), GC_DEBUG_ALL, &argc);
     //test1();
     //test2();
     test3();

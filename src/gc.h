@@ -45,10 +45,11 @@ extern Gc gc;
 /**
  * Initialize the garbage collector
  * 
+ * @param[in] max           - Max heap size
  * @param[in] debug         - Debug flags
  * @param[in] stackBottom   - Call-stack bottom
  */
-void gc_init(unsigned int debug, void* stackBottom);
+void gc_init(unsigned int max, unsigned int debug, void* stackBottom);
 
 /**
  * Shutdown the garbage collector
