@@ -1,9 +1,11 @@
 #ifndef ___GC_H___
 #define ___GC_H___
+#include <stdint.h>
 #include <stdbool.h>
 
 typedef struct _Gc Gc;
 typedef struct _GcNode GcNode;
+typedef struct _GcRoot GcRoot;
 
 typedef void (*GcNodeDestructor)(GcNode* node);
 
@@ -24,6 +26,9 @@ typedef struct _Gc
 
     unsigned int        max;
     unsigned int        allocated;
+
+    GcRoot*             rootListHead;       // First root in the list
+    GcRoot*             rootListTail;       // Last root in this list
 }Gc;
 
 typedef struct _GcNode
@@ -35,6 +40,13 @@ typedef struct _GcNode
     GcNodeDestructor    dtor;               // Destructor
     void*               pointer;            // Memory pointer
 }GcNode;
+
+typedef struct _GcRoot
+{
+    GcRoot*             prev;
+    GcRoot*             next;
+    uintptr_t*          pointer;
+}GcRoot;
 
 #ifdef __cplusplus
 extern "C" {
@@ -79,6 +91,18 @@ void* gc_malloc_dtor(int sizeInBytes, GcNodeDestructor dtor);
  * Run garbage collector
  */
 void gc_run();
+
+/**
+ * Clear all registered roots
+ */
+void gc_clear_roots();
+
+/**
+ * Register a root
+ * 
+ * @param pointer           - Root pointer
+ */
+void gc_register_root(void* pointer);
 
 #ifdef __cplusplus
 };

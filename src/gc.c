@@ -91,6 +91,22 @@ static void gc_mark_phase()
     // Recorrer cada una de las raices (punteros en call-stack)
     //
     gc_scan_region(beg, end);
+
+    //
+    // Recorrer cada una de las raices registradas (variables globales)
+    //
+    for(GcRoot* root = gc.rootListHead; root != NULL; root = root->next)
+    {
+        GcNode* node;
+
+        if(NULL != (node = gc_is_reachable_object(*root->pointer)))
+        {
+            if(!node->marked)
+            {
+                gc_mark_node(node);
+            }
+        }
+    }
 }
 
 //
@@ -135,6 +151,8 @@ void gc_init(unsigned int max, unsigned int debug, void* stackBottom)
 void gc_shutdown()
 {
     gc_run();
+
+    gc_clear_roots();
 
     if(gc.debug & GC_DEBUG_SHUTDOWN)
     {
@@ -206,5 +224,50 @@ void gc_run()
     if(gc.debug & GC_DEBUG_RUN)
     {
         printf("GC: finish run\n");
+    }
+}
+
+void gc_clear_roots()
+{
+    GcRoot* root;
+    GcRoot* next;
+    for(root = gc.rootListHead; root != NULL; root = next)
+    {
+        next = root->next;
+
+        if(root->prev)
+            root->prev->next = root->next;
+        if(root->next)
+            root->next->prev = root->prev;
+        if(gc.rootListHead == root)
+            gc.rootListHead = root->next;
+        if(gc.rootListTail == root)
+            gc.rootListTail = root->prev;
+            
+        free(root);
+    }
+    gc.rootListHead = NULL;
+    gc.rootListTail = NULL;
+}
+
+void gc_register_root(void* pointer)
+{
+    // Crear raíz
+    GcRoot* root = malloc(sizeof(GcRoot));
+    root->prev = NULL;
+    root->next = NULL;
+    root->pointer = pointer;
+    
+    // Enlazar raíz en la lista
+    if(gc.rootListHead == NULL)
+    {
+        gc.rootListHead = root;
+        gc.rootListTail = root;
+    }
+    else
+    {
+        root->prev = gc.rootListTail;
+        gc.rootListTail->next = root;
+        gc.rootListTail = root;
     }
 }

@@ -51,12 +51,31 @@ void test3()
     gc_malloc_dtor(100, dtor);
 }
 
+void test4()
+{
+    printf("Test GC - 4\n\n");
+    static int* a;
+    static int* b;
+
+    gc_register_root(&a);
+
+    a = gc_malloc(100);
+    b = gc_malloc(100);
+    gc_run();
+    a = NULL;
+    b = NULL;
+    gc_run();
+
+    printf("..\n");
+}
+
 int main(int argc, char* argv[])
 {
     gc_init(KB(4), GC_DEBUG_ALL, &argc);
     //test1();
     //test2();
-    test3();
+    //test3();
+    test4();
     gc_shutdown();
 
     return 0;
